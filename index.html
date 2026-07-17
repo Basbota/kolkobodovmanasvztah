@@ -3,38 +3,343 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Love-O-Meter™</title>
+<title>LOVE QUEST // Relationship Tracker</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
 
   :root{
-    --bg-deep:#1a1030;
-    --bg-mid:#2b1b3d;
-    --rose:#ff6b8b;
-    --rose-bright:#ff9bb0;
-    --gold:#ffd166;
-    --lavender:#e8dfff;
-    --cloud:#8a93a6;
-    --panel:#241633;
-    --panel-edge:rgba(255,214,102,0.18);
+    --bg-black:#0b0014;
+    --cab:#1e1033;
+    --cab-edge:#3a1f5c;
+    --pink:#ff3e9a;
+    --cyan:#3ef8ff;
+    --yellow:#ffe156;
+    --green:#3effa1;
+    --white:#f4f1ff;
+    --dim:#8a7fae;
   }
 
-  *{box-sizing:border-box; margin:0; padding:0;}
+  *{ box-sizing:border-box; margin:0; padding:0; image-rendering:pixelated; }
 
   html,body{
     min-height:100vh;
     background:
-      radial-gradient(ellipse at 20% 15%, rgba(255,107,139,0.12), transparent 50%),
-      radial-gradient(ellipse at 80% 85%, rgba(255,209,102,0.08), transparent 50%),
-      linear-gradient(160deg, var(--bg-deep), var(--bg-mid));
-    color:var(--lavender);
-    font-family:'Space Mono', monospace;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 3px),
+      radial-gradient(ellipse at 50% 0%, #2a1650, var(--bg-black) 70%);
+    color:var(--white);
+    font-family:'VT323', monospace;
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
     overflow-x:hidden;
-    padding:24px;
   }
+
+  body::before{
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:50;
+    background:repeating-linear-gradient(
+      0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px,
+      transparent 2px, transparent 4px
+    );
+    mix-blend-mode:multiply;
+  }
+  body::after{
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:51;
+    box-shadow: inset 0 0 120px rgba(0,0,0,0.75);
+  }
+
+  .cabinet{
+    position:relative; z-index:1;
+    width:100%; max-width:420px;
+    background: linear-gradient(180deg, var(--cab), #150b28);
+    border:4px solid var(--cab-edge);
+    box-shadow:
+      0 0 0 4px var(--bg-black),
+      0 0 0 8px var(--cab-edge),
+      0 20px 60px rgba(0,0,0,0.7),
+      inset 0 0 40px rgba(0,0,0,0.4);
+    padding:22px 20px 26px;
+    text-align:center;
+  }
+
+  .marquee{
+    font-family:'Press Start 2P', monospace;
+    font-size:11px; color:var(--yellow);
+    text-shadow:0 0 8px var(--yellow), 0 0 2px #fff;
+    letter-spacing:2px;
+    animation: flicker 3.5s infinite;
+  }
+  @keyframes flicker{
+    0%,96%,100%{ opacity:1; }
+    97%{ opacity:0.6; }
+    98%{ opacity:1; }
+  }
+
+  .title{
+    font-family:'Press Start 2P', monospace;
+    font-size:22px; margin-top:10px; line-height:1.5;
+    color:var(--pink);
+    text-shadow: 3px 3px 0 var(--cyan);
+  }
+
+  .divider{
+    margin:14px 0; height:2px;
+    background: repeating-linear-gradient(90deg, var(--dim) 0 6px, transparent 6px 12px);
+  }
+
+  .heart-bar{
+    display:flex; justify-content:center; gap:4px; margin:16px 0 6px; flex-wrap:wrap;
+  }
+  .pxheart{ width:22px; height:20px; position:relative; }
+  .pxheart svg{ width:100%; height:100%; }
+
+  .score-zone{ margin:18px 0 10px; }
+  .score{
+    font-family:'Press Start 2P', monospace;
+    font-size:52px; color:var(--white);
+    text-shadow: 0 0 12px var(--pink), 4px 4px 0 var(--cyan);
+    transition: transform 0.15s ease;
+  }
+  .score.bump{ animation: popUp 0.4s ease; }
+  .score.dip{ animation: popDown 0.4s ease; }
+  @keyframes popUp{
+    0%{ transform:scale(1); }
+    40%{ transform:scale(1.25); color:var(--green); }
+    100%{ transform:scale(1); }
+  }
+  @keyframes popDown{
+    0%,100%{ transform:translateX(0); }
+    20%{ transform:translateX(-6px); }
+    40%{ transform:translateX(6px); }
+    60%{ transform:translateX(-4px); }
+    80%{ transform:translateX(4px); }
+  }
+
+  .status-label{
+    font-family:'Press Start 2P', monospace;
+    font-size:10px; color:var(--cyan); margin-top:10px; letter-spacing:1px;
+  }
+
+  .controls{ display:flex; gap:12px; justify-content:center; margin-top:24px; }
+  .arcade-btn{
+    font-family:'Press Start 2P', monospace; font-size:13px;
+    width:64px; height:64px; border-radius:50%; cursor:pointer;
+    border:3px solid rgba(0,0,0,0.4);
+    color:var(--bg-black);
+    display:flex; align-items:center; justify-content:center;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  .btn-up{
+    background: radial-gradient(circle at 35% 30%, #7dffc4, var(--green));
+    box-shadow: 0 6px 0 #1e9463, 0 10px 16px rgba(0,0,0,0.5);
+  }
+  .btn-down{
+    background: radial-gradient(circle at 35% 30%, #ff9ec9, var(--pink));
+    box-shadow: 0 6px 0 #b91e63, 0 10px 16px rgba(0,0,0,0.5);
+  }
+  .arcade-btn:active{ transform:translateY(5px); box-shadow:0 1px 0 rgba(0,0,0,0.3); }
+
+  .custom-row{
+    display:flex; gap:6px; margin-top:20px; justify-content:center; align-items:center;
+    font-family:'VT323', monospace; font-size:18px;
+  }
+  .custom-row input{
+    width:60px; padding:6px 8px; text-align:center;
+    background:var(--bg-black); border:2px solid var(--cab-edge); color:var(--white);
+    font-family:'VT323', monospace; font-size:18px;
+  }
+  .custom-row button{
+    font-family:'VT323', monospace; font-size:16px; padding:6px 12px; cursor:pointer;
+    background:var(--bg-black); border:2px solid var(--cab-edge); color:var(--cyan);
+  }
+  .custom-row button:hover{ border-color:var(--cyan); }
+
+  .log{
+    margin-top:22px; padding-top:14px; border-top:2px dashed var(--cab-edge);
+    text-align:left; font-size:15px; color:var(--dim); max-height:80px; overflow-y:auto;
+  }
+  .log-entry.up{ color:var(--green); }
+  .log-entry.down{ color:var(--pink); }
+
+  .footnote{
+    margin-top:18px; font-family:'Press Start 2P', monospace;
+    font-size:8px; color:var(--dim); letter-spacing:1px;
+  }
+
+  .fx-layer{ position:fixed; inset:0; pointer-events:none; z-index:40; overflow:hidden; }
+  .coin{
+    position:absolute; font-family:'Press Start 2P', monospace; font-size:16px;
+    color:var(--yellow); text-shadow:0 0 6px var(--yellow);
+    animation: coinFloat 1.4s ease-out forwards;
+  }
+  @keyframes coinFloat{
+    0%{ opacity:0; transform:translateY(0) scale(0.6); }
+    15%{ opacity:1; }
+    100%{ opacity:0; transform:translateY(-70vh) scale(1.1); }
+  }
+  .glitchtext{
+    position:fixed; top:40%; left:50%; transform:translate(-50%,-50%);
+    font-family:'Press Start 2P', monospace; font-size:20px; color:var(--pink);
+    text-shadow:2px 0 var(--cyan), -2px 0 var(--yellow);
+    opacity:0; z-index:45;
+    animation: glitchPop 0.9s ease forwards;
+  }
+  @keyframes glitchPop{
+    0%{ opacity:0; }
+    15%{ opacity:1; }
+    75%{ opacity:1; }
+    100%{ opacity:0; }
+  }
+  .shake{ animation: cabShake 0.4s ease; }
+  @keyframes cabShake{
+    0%,100%{ transform:translateX(0); }
+    25%{ transform:translateX(-5px); }
+    50%{ transform:translateX(5px); }
+    75%{ transform:translateX(-3px); }
+  }
+</style>
+</head>
+<body>
+
+<div class="fx-layer" id="fxLayer"></div>
+
+<div class="cabinet" id="cabinet">
+  <div class="marquee">★ 1UP RELATIONSHIP STATUS ★</div>
+  <div class="title">LOVE<br>QUEST</div>
+
+  <div class="divider"></div>
+
+  <div class="heart-bar" id="heartBar"></div>
+
+  <div class="score-zone">
+    <div class="score" id="score">88%</div>
+    <div class="status-label" id="statusLabel">THRIVING</div>
+  </div>
+
+  <div class="controls">
+    <button class="arcade-btn btn-down" id="btnDown">−1</button>
+    <button class="arcade-btn btn-up" id="btnUp">+1</button>
+  </div>
+
+  <div class="custom-row">
+    <input type="number" id="customAmt" placeholder="5" min="1" max="100">
+    <button id="customUp">+ APPLY</button>
+    <button id="customDown">− APPLY</button>
+  </div>
+
+  <div class="log" id="log"></div>
+
+  <div class="footnote">INSERT LOVE TO CONTINUE</div>
+</div>
+
+<script>
+  let score = 88;
+  const scoreEl = document.getElementById('score');
+  const statusLabel = document.getElementById('statusLabel');
+  const cabinet = document.getElementById('cabinet');
+  const fxLayer = document.getElementById('fxLayer');
+  const logEl = document.getElementById('log');
+  const heartBar = document.getElementById('heartBar');
+
+  const HEART_FULL = `<svg viewBox="0 0 8 7"><path fill="var(--pink)" d="M1 0h1v1H1zM5 0h1v1H5zM0 1h1v1H0zM2 1h1v1H2zM4 1h1v1H4zM6 1h1v1H6zM0 2h6v1H0zM0 3h6v1H0zM1 4h4v1H1zM2 5h2v1H2zM3 6h1v1H3z"/></svg>`;
+  const HEART_EMPTY = `<svg viewBox="0 0 8 7"><path fill="none" stroke="var(--dim)" stroke-width="0.6" d="M1 0.5h1M5 0.5h1M0.5 1h1M2.5 1h1M4.5 1h1M6.5 1h1M0.5 2h5M0.5 3h5M1.5 4h3M2.5 5h1"/></svg>`;
+
+  function buildHeartBar(){
+    heartBar.innerHTML = '';
+    const fullHearts = Math.round(score / 10);
+    for(let i=0;i<10;i++){
+      const div = document.createElement('div');
+      div.className = 'pxheart';
+      div.innerHTML = i < fullHearts ? HEART_FULL : HEART_EMPTY;
+      heartBar.appendChild(div);
+    }
+  }
+
+  function statusFor(v){
+    if(v >= 95) return "FINAL BOSS LOVE";
+    if(v >= 80) return "THRIVING";
+    if(v >= 60) return "LEVELING UP";
+    if(v >= 40) return "IT'S COMPLICATED";
+    if(v >= 20) return "LOW HP";
+    return "GAME OVER?";
+  }
+
+  function render(delta){
+    score = Math.max(0, Math.min(100, score));
+    scoreEl.textContent = score + '%';
+    statusLabel.textContent = statusFor(score);
+    buildHeartBar();
+
+    scoreEl.classList.remove('bump','dip');
+    void scoreEl.offsetWidth;
+    if(delta > 0) scoreEl.classList.add('bump');
+    if(delta < 0) scoreEl.classList.add('dip');
+  }
+
+  function logChange(delta, newVal){
+    const entry = document.createElement('div');
+    entry.className = 'log-entry ' + (delta > 0 ? 'up' : 'down');
+    const sign = delta > 0 ? '+' : '';
+    const now = new Date();
+    const time = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    entry.textContent = `${time}  ${sign}${delta}  ->  ${newVal}%`;
+    logEl.prepend(entry);
+  }
+
+  function spawnCoins(count){
+    for(let i=0;i<count;i++){
+      const c = document.createElement('div');
+      c.className = 'coin';
+      c.textContent = '+';
+      c.style.left = (35 + Math.random()*30) + '%';
+      c.style.top = '55%';
+      c.style.animationDelay = (Math.random()*0.25)+'s';
+      fxLayer.appendChild(c);
+      setTimeout(()=>c.remove(), 1700);
+    }
+    const glitch = document.createElement('div');
+    glitch.className = 'glitchtext';
+    glitch.textContent = 'LEVEL UP!';
+    fxLayer.appendChild(glitch);
+    setTimeout(()=>glitch.remove(), 1000);
+  }
+
+  function spawnGlitch(){
+    const glitch = document.createElement('div');
+    glitch.className = 'glitchtext';
+    glitch.textContent = 'OOF...';
+    fxLayer.appendChild(glitch);
+    setTimeout(()=>glitch.remove(), 1000);
+
+    cabinet.classList.remove('shake');
+    void cabinet.offsetWidth;
+    cabinet.classList.add('shake');
+  }
+
+  function adjust(delta){
+    const newVal = Math.max(0, Math.min(100, score + delta));
+    const actualDelta = newVal - score;
+    score = newVal;
+    render(actualDelta);
+    if(actualDelta !== 0) logChange(actualDelta, score);
+    if(actualDelta > 0) spawnCoins(Math.min(8, 3 + actualDelta));
+    if(actualDelta < 0) spawnGlitch();
+  }
+
+  document.getElementById('btnUp').addEventListener('click', ()=>adjust(1));
+  document.getElementById('btnDown').addEventListener('click', ()=>adjust(-1));
+  document.getElementById('customUp').addEventListener('click', ()=>{
+    const amt = parseInt(document.getElementById('customAmt').value) || 0;
+    if(amt>0) adjust(amt);
+  });
+  document.getElementById('customDown').addEventListener('click', ()=>{
+    const amt = parseInt(document.getElementById('customAmt').value) || 0;
+    if(amt>0) adjust(-amt);
+  });
+
+  render(0);
+</script>
+
+</body>
+</html>  }
 
   .stars{
     position:fixed; inset:0; pointer-events:none; z-index:0;
